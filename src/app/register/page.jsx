@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { Spinner, showToast } from '../../components/ui/index';
+import { Spinner, ToastContainer, showToast } from '../../components/ui/index';
 import { S } from '../../lib/styles';
 import api from '../../lib/api';
 
@@ -178,6 +178,7 @@ export default function RegisterPage() {
 
   return (
     <div style={{ minHeight:'100vh', background:'#0a0f1e', display:'flex', alignItems:'center', justifyContent:'center', padding:24, fontFamily:"'Plus Jakarta Sans',sans-serif", position:'relative', overflow:'hidden' }}>
+      <ToastContainer />
       {/* Background glows */}
       <div style={{ position:'absolute', width:500, height:500, top:'-15%', right:'-10%', background:'radial-gradient(circle,rgba(79,70,229,0.1),transparent 70%)', borderRadius:'50%', filter:'blur(60px)', pointerEvents:'none' }} />
       <div style={{ position:'absolute', width:300, height:300, bottom:'0%', left:'5%', background:'radial-gradient(circle,rgba(37,99,235,0.1),transparent 70%)', borderRadius:'50%', filter:'blur(40px)', pointerEvents:'none' }} />
@@ -283,7 +284,7 @@ export default function RegisterPage() {
             </div>
 
             <button type="submit" disabled={loading}
-              style={{ ...S.btnPrimary, width:'100%', padding:'13px', fontSize:15, justifyContent:'center', background:plan==='paid'?'linear-gradient(135deg,#d97706,#b45309)':undefined, boxShadow:plan==='paid'?'0 8px 24px rgba(217,119,6,0.25)':undefined }}>
+              style={{ ...S.btnPrimary, width:'100%', padding:'13px', fontSize:15, justifyContent:'center', background:plan==='paid'?'linear-gradient(135deg,#d97706,#b45309)': 'linear-gradient(178deg, #0050ff, #0c2354)', boxShadow:plan==='paid'?'0 8px 24px rgba(217,119,6,0.25)': '0 8px 24px rgba(0, 80, 255, 0.25)' }}>
               {loading ? <Spinner size={18} color="#fff"/> : plan==='paid'?'Register & Pay ₹999 →':'Register Free →'}
             </button>
           </form>

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { Spinner, showToast } from '../../components/ui/index';
+import { Spinner, ToastContainer, showToast } from '../../components/ui/index';
 import { S } from '../../lib/styles';
 
 export default function LoginPage() {
@@ -52,6 +52,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0f1e', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontFamily: "'Plus Jakarta Sans', sans-serif", position: 'relative', overflow: 'hidden' }}>
+      <ToastContainer />
       <div style={{ position: 'absolute', width: 400, height: 400, top: '-10%', left: '-10%', background: 'radial-gradient(circle, rgba(37,99,235,0.12), transparent 70%)', borderRadius: '50%', filter: 'blur(40px)' }} />
       <div style={{ position: 'absolute', width: 300, height: 300, bottom: '10%', right: '5%', background: 'radial-gradient(circle, rgba(124,58,237,0.1), transparent 70%)', borderRadius: '50%', filter: 'blur(40px)' }} />
 

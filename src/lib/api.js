@@ -48,7 +48,15 @@ class ApiClient {
     }
 
     const data = await response.json().catch(() => ({ success: false, message: 'Invalid response' }));
-    if (!response.ok) throw new Error(data.message || `HTTP ${response.status}`);
+    let message = ''
+    if (data.errors) {
+      
+       message = data.errors.map(err => err.message).join(', ');
+    }else{
+      message = data.message
+    }
+    
+    if (!response.ok) throw new Error(message || `HTTP ${response.status}`);
     return data;
   }
 
