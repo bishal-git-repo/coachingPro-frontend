@@ -5,6 +5,20 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { ToastContainer } from '../ui/index';
 
+// ── Tiny isolated component — the ONLY place useSearchParams is called.
+// Wrapped in its own Suspense so it never blocks SSR/prerender of any page.
+function UpgradeRedirectWatcher() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams?.get('upgrade') === '1' && user) {
+      router.replace('/dashboard/upgrade?from=register');
+    }
+  }, [searchParams, user, router]);
+  return null;
+}
+
 // ── Professional SVG icon set (no emoji/cartoon icons) ────────
 const NavIcons = {
   dashboard: (
@@ -93,16 +107,8 @@ export default function DashboardLayout({ children }) {
   const { user, loading, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobile, setMobile] = useState(false);
-
-  // If ?upgrade=1 is in the URL (from register with Pro plan), redirect to upgrade page
-  useEffect(() => {
-    if (searchParams?.get('upgrade') === '1' && user) {
-      router.replace('/dashboard/upgrade?from=register');
-    }
-  }, [searchParams, user, router]);
 
   useEffect(() => {
     const check = () => {
@@ -135,6 +141,8 @@ export default function DashboardLayout({ children }) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#0a0f1e', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <ToastContainer />
+      {/* Isolated Suspense boundary for useSearchParams — never blocks page prerender */}
+      <Suspense fallback={null}><UpgradeRedirectWatcher /></Suspense>
 
       {/* Sidebar */}
       <aside style={{
@@ -256,14 +264,3 @@ export default function DashboardLayout({ children }) {
     </div>
   );
 }
-
-// Wrap in Suspense because useSearchParams requires it in Next.js App Router
-function DashboardLayoutWithSuspense({ children }) {
-  return (
-    <Suspense fallback={<div style={{ minHeight:'100vh', background:'#0a0f1e' }} />}>
-      <DashboardLayout>{children}</DashboardLayout>
-    </Suspense>
-  );
-}
-
-// export { DashboardLayoutWithSuspense as default };
