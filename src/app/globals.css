@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0f1e;
+  color: #ffffff;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0f1e; }
+::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 3px; }
+::selection { background: rgba(96, 165, 250, 0.3); }
+
+/* ── INPUT FOCUS FIX ─────────────────────────────────────────────
+   Global CSS handles focus/hover styles so FormInput doesn't need
+   local state that causes re-renders and focus loss on every keystroke.
+*/
+.cp-input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: #f1f5f9;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.cp-input:focus {
+  border-color: rgba(96,165,250,0.5) !important;
+}
+.cp-input:hover:not(:focus) {
+  border-color: rgba(255,255,255,0.18);
+}
+/* Fix select option bg on all browsers */
+.cp-input option {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+input.cp-input::placeholder,
+textarea.cp-input::placeholder { color: #475569; }
+
+/* ── Responsive table wrapper ─────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Gradient text ─────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(96, 165, 250, 0.15);
+}
+
+.mesh-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(96, 165, 250, 0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(167, 139, 250, 0.1), transparent);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(96, 165, 250, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(167, 139, 250, 0.5); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.float { animation: float 6s ease-in-out infinite; }
+.glow { animation: glow 3s ease-in-out infinite; }
+.slide-in { animation: slideIn 0.6s ease forwards; }
+
+/* ── MOBILE RESPONSIVE DASHBOARD ─────────────────────────────── */
+@media (max-width: 768px) {
+  /* Landing navbar */
+  .desktop-nav { display: none !important; }
+
+  /* Dashboard main content padding */
+  .dash-main { padding: 20px 16px !important; }
+
+  /* Stat grid goes to 2 cols on mobile */
+  .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Two-col grids become single col */
+  .two-col-grid { grid-template-columns: 1fr !important; }
+
+  /* Table horizontal scroll */
+  .table-wrap { overflow-x: auto; }
+
+  /* Page header stacks on mobile */
+  .page-header-wrap { flex-direction: column !important; align-items: flex-start !important; }
+
+  /* Modal full screen on mobile */
+  .modal-box { margin: 0 !important; border-radius: 16px 16px 0 0 !important; max-height: 95vh !important; }
+
+  /* Form grids collapse to 1 col */
+  .form-grid-2 { grid-template-columns: 1fr !important; }
+
+  /* Dashboard cards */
+  .dash-card-row { flex-direction: column !important; }
+
+  /* Topbar upgrade button — shorter text */
+  .upgrade-btn-text { display: none; }
+}
+
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── THREE COL GRID RESPONSIVE ────────────────────────────────── */
+@media (max-width: 900px) {
+  .three-col-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 580px) {
+  .three-col-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── TIMETABLE GRID MOBILE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Timetable — only show Mon/Tue/Wed on small screens */
+  .timetable-grid { overflow-x: auto; }
+}
+
+/* ── ATTENDANCE CARD GRID ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  .attendance-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── STATUS BADGE COLORS (for all pages) ──────────────────────── */
+.status-active   { background: rgba(22,163,74,0.15);  color: #4ade80; border: 1px solid rgba(22,163,74,0.3); }
+.status-inactive { background: rgba(100,116,139,0.15); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+.status-pending  { background: rgba(217,119,6,0.15);  color: #fbbf24; border: 1px solid rgba(217,119,6,0.3); }
+.status-paid     { background: rgba(22,163,74,0.15);  color: #4ade80; border: 1px solid rgba(22,163,74,0.3); }
+.status-overdue  { background: rgba(220,38,38,0.15);  color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
