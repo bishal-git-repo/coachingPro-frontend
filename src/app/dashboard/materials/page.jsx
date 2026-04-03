@@ -7,35 +7,59 @@ import { useAuth } from '../../../context/AuthContext';
 import api from '../../../lib/api';
 
 function PdfViewer({ materialId, baseUrl, token }) {
-  const [blobUrl, setBlobUrl] = useState(null);
+  const [s3Url, setS3Url] = useState(null);
   const [error, setError] = useState(null);
+
   useEffect(() => {
-    let url = null;
-    fetch(`${baseUrl}/materials/${materialId}/stream`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => { if (!r.ok) throw new Error('Failed to load PDF'); return r.blob(); })
-      .then(blob => { url = URL.createObjectURL(blob); setBlobUrl(url); })
+    // Step 1: Call our backend to get a pre-signed S3 URL (returns JSON)
+    // Step 2: Set that URL directly as iframe src — no blob, no CORS issue
+    fetch(`${baseUrl}/materials/${materialId}/stream`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => { if (!r.ok) throw new Error('Failed to load PDF'); return r.json(); })
+      .then(data => {
+        if (!data.url) throw new Error('No URL returned from server');
+        setS3Url(data.url);
+      })
       .catch(e => setError(e.message));
-    return () => { if (url) URL.revokeObjectURL(url); };
   }, [materialId, baseUrl, token]);
-  if (error) return <div style={{ color:'#f87171', padding:20, textAlign:'center' }}>{error}</div>;
-  if (!blobUrl) return <div style={{ display:'flex', justifyContent:'center', padding:40 }}><Spinner size={32} /></div>;
-  return <iframe src={blobUrl} style={{ width:'100%', height:'100%', border:'none', borderRadius:8 }} title="PDF Viewer" />;
+
+  if (error)  return <div style={{ color:'#f87171', padding:20, textAlign:'center' }}>{error}</div>;
+  if (!s3Url) return <div style={{ display:'flex', justifyContent:'center', padding:40 }}><Spinner size={32} /></div>;
+  // iframe src set directly to S3 URL — browser treats this as navigation, NOT XHR, so no CORS check
+  return <iframe src={s3Url} style={{ width:'100%', height:'100%', border:'none', borderRadius:8 }} title="PDF Viewer" />;
 }
 
 function VideoViewer({ materialId, baseUrl, token }) {
-  const [blobUrl, setBlobUrl] = useState(null);
+  const [s3Url, setS3Url] = useState(null);
   const [error, setError] = useState(null);
+
   useEffect(() => {
-    let url = null;
-    fetch(`${baseUrl}/materials/${materialId}/stream`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => { if (!r.ok) throw new Error('Failed to load video'); return r.blob(); })
-      .then(blob => { url = URL.createObjectURL(blob); setBlobUrl(url); })
+    // Same pattern — get pre-signed URL from backend, set as video src directly
+    fetch(`${baseUrl}/materials/${materialId}/stream`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => { if (!r.ok) throw new Error('Failed to load video'); return r.json(); })
+      .then(data => {
+        if (!data.url) throw new Error('No URL returned from server');
+        setS3Url(data.url);
+      })
       .catch(e => setError(e.message));
-    return () => { if (url) URL.revokeObjectURL(url); };
   }, [materialId, baseUrl, token]);
-  if (error) return <div style={{ color:'#f87171', padding:20, textAlign:'center' }}>{error}</div>;
-  if (!blobUrl) return <div style={{ display:'flex', justifyContent:'center', padding:40 }}><Spinner size={32} /></div>;
-  return <video controls autoPlay style={{ width:'100%', borderRadius:10, background:'#000', maxHeight:'70vh', display:'block' }} src={blobUrl}>Your browser does not support video.</video>;
+
+  if (error)  return <div style={{ color:'#f87171', padding:20, textAlign:'center' }}>{error}</div>;
+  if (!s3Url) return <div style={{ display:'flex', justifyContent:'center', padding:40 }}><Spinner size={32} /></div>;
+  // video src set directly to S3 URL — browser treats this as a media request, NOT XHR, no CORS
+  return (
+    <video
+      controls
+      autoPlay
+      src={s3Url}
+      style={{ width:'100%', borderRadius:10, background:'#000', maxHeight:'70vh', display:'block' }}
+    >
+      Your browser does not support video.
+    </video>
+  );
 }
 
 export default function MaterialsPage() {
@@ -66,11 +90,9 @@ export default function MaterialsPage() {
   const token = typeof window !== 'undefined' ? (localStorage.getItem('accessToken')||'') : '';
 
   useEffect(() => {
-    // Load batches filtered to this user's batches (for student/teacher)
     if (isAdmin) {
       api.getBatches().then(r => { setAllBatches(r.data||[]); setMyBatches(r.data||[]); }).catch(()=>{});
     } else {
-      // Use /my-batches — reliably returns only assigned batches with b.id
       api.getMyBatches().then(r => {
         const batches = r.data || [];
         setMyBatches(batches);
@@ -114,17 +136,14 @@ export default function MaterialsPage() {
     return bytes > 1024*1024 ? (bytes/1024/1024).toFixed(1)+' MB' : (bytes/1024).toFixed(0)+' KB';
   }
 
-  // Filter materials to user's batches
   const filtered = materials.filter(m => {
     const mtype = m.type||m.file_type||'pdf';
     const batchMatch = !filterBatch ? (isAdmin ? true : myBatches.some(b => b.id==m.batch_id)) : String(m.batch_id)===String(filterBatch);
     const typeMatch = filterType==='all' || mtype===filterType;
-    // Non-admin: only show materials from their batches
     const accessCheck = isAdmin ? true : myBatches.some(b => b.id==m.batch_id);
     return typeMatch && batchMatch && accessCheck;
   });
 
-  // Upload batch options: only user's batches
   const uploadBatches = isAdmin ? allBatches : myBatches;
 
   return (
