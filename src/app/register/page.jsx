@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
@@ -24,7 +24,7 @@ const PLANS = [
     sub: '/month',
     icon: '⭐',
     accent: '#d97706',
-    features: ['Unlimited students', 'Unlimited teachers', 'Razorpay payments', 'Fee slip email delivery', 'Priority support'],
+    features: ['Unlimited students', 'Unlimited teachers', /*'Razorpay payments',*/ 'Fee slip email delivery', 'Priority support'],
     badge: 'RECOMMENDED',
   },
 ];
@@ -49,6 +49,11 @@ export default function RegisterPage() {
   const [showPass, setShowPass] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('plan') === 'paid') setPlan('paid');
+}, []);
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 

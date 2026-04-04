@@ -102,7 +102,7 @@ export default function LandingPage() {
     ['✅', 'Online Fee Collection'],
     ['✅', 'Auto Fee Slip by Email'],
     ['✅', 'PDF Receipt Download'],
-    ['✅', 'Razorpay Integration'],
+    // ['✅', 'Razorpay Integration'],
     ['✅', 'Priority Support'],
     ['✅', 'Advanced Analytics'],
   ];
@@ -428,22 +428,22 @@ export default function LandingPage() {
               <Link href="/register" style={{ ...S.btnGlass, display: 'block', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>Start Free</Link>
             </div>
 
-            {/* Paid Plan */}
-            <div style={{ background: 'linear-gradient(135deg, rgba(37,99,235,0.15), rgba(79,70,229,0.1))', border: '2px solid rgba(96,165,250,0.4)', borderRadius: 24, padding: 36, position: 'relative' }}>
-              <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: 999, padding: '6px 20px', fontSize: 11, fontWeight: 800, letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>
-              <div style={{ display: 'inline-block', background: 'rgba(37,99,235,0.2)', border: '1px solid rgba(96,165,250,0.3)', borderRadius: 8, padding: '4px 14px', fontSize: 12, fontWeight: 700, color: '#60a5fa', marginBottom: 20 }}>PAID PLAN</div>
+            {/* Paid Plan — amber/gold matching register page */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(217,119,6,0.12), rgba(180,83,9,0.06))', border: '2px solid rgba(217,119,6,0.45)', borderRadius: 24, padding: 36, position: 'relative', boxShadow: '0 0 40px rgba(217,119,6,0.08)' }}>
+              <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,#d97706,#b45309)', borderRadius: 999, padding: '6px 20px', fontSize: 11, fontWeight: 800, letterSpacing: 1, whiteSpace: 'nowrap', color: '#fff' }}>RECOMMENDED</div>
+              <div style={{ display: 'inline-block', background: 'rgba(217,119,6,0.18)', border: '1px solid rgba(217,119,6,0.4)', borderRadius: 8, padding: '4px 14px', fontSize: 12, fontWeight: 700, color: '#fbbf24', marginBottom: 20 }}>⭐ PRO PLAN</div>
               <div style={{ marginBottom: 28 }}>
-                <span style={{ ...S.displayFont, fontSize: 52, fontWeight: 800 }}>₹999</span>
-                <span style={{ color: '#64748b', fontSize: 14, marginLeft: 8 }}>/month</span>
+                <span style={{ ...S.displayFont, fontSize: 52, fontWeight: 800, color: '#fbbf24' }}>₹999</span>
+                <span style={{ color: '#92400e', fontSize: 14, marginLeft: 8 }}>/month</span>
               </div>
               <div style={{ marginBottom: 32 }}>
                 {paidPlanFeatures.map(([icon, text]) => (
-                  <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, fontSize: 14, color: '#cbd5e1' }}>
+                  <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, fontSize: 14, color: '#fde68a' }}>
                     <span>{icon}</span><span>{text}</span>
                   </div>
                 ))}
               </div>
-              <Link href="/register" style={{ ...S.btnPrimary, display: 'block', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>Get Full Access</Link>
+              <Link href="/register?plan=paid" style={{ display: 'block', textAlign: 'center', width: '100%', boxSizing: 'border-box', padding: '14px 32px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#d97706,#b45309)', color: '#fff', fontWeight: 700, fontSize: 16, textDecoration: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(217,119,6,0.35)', transition: 'all 0.2s' }}>Get Full Access →</Link>
             </div>
           </div>
         </div>
@@ -507,28 +507,56 @@ export default function LandingPage() {
               </div>
               <p style={{ color: '#475569', fontSize: 14, lineHeight: 1.7 }}>The complete management platform for coaching institutes in India.</p>
             </div>
-            {[
-              { title: 'Product', links: ['Features', 'Pricing', 'Changelog'] },
-              { title: 'Portal', links: ['Admin Login', 'Teacher Login', 'Student Login'] },
-              { title: 'Company', links: ['About', 'Contact', 'Privacy Policy'] },
-            ].map(col => (
-              <div key={col.title}>
-                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 16, color: '#f1f5f9', textTransform: 'uppercase', letterSpacing: 1 }}>{col.title}</div>
-                {col.links.map(link => (
-                  <div key={link} style={{ color: '#475569', fontSize: 14, marginBottom: 10, cursor: 'pointer', transition: 'color 0.2s' }}
+                <div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 16, color: '#f1f5f9', textTransform: 'uppercase', letterSpacing: 1 }}>Product</div>
+                {[['Features', '#features'], ['How It Works', '#how-it-works'], ['Pricing', '#pricing']].map(([label, href]) => (
+                  <a key={label} href={href} style={{ display: 'block', color: '#475569', fontSize: 14, marginBottom: 10, textDecoration: 'none', transition: 'color 0.2s' }}
                     onMouseEnter={e => e.target.style.color = '#60a5fa'}
                     onMouseLeave={e => e.target.style.color = '#475569'}>
-                    {link}
-                  </div>
+                    {label}
+                  </a>
                 ))}
               </div>
-            ))}
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 16, color: '#f1f5f9', textTransform: 'uppercase', letterSpacing: 1 }}>Portal</div>
+                {[['Admin Login', '/login'], ['Register', '/register']].map(([label, href]) => (
+                  <Link key={label} href={href} style={{ display: 'block', color: '#475569', fontSize: 14, marginBottom: 10, textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.target.style.color = '#60a5fa'}
+                    onMouseLeave={e => e.target.style.color = '#475569'}>
+                    {label}
+                  </Link>
+                ))}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 16, color: '#f1f5f9', textTransform: 'uppercase', letterSpacing: 1 }}>Legal</div>
+                {[
+                  ['Privacy Policy', '/privacy-policy'],
+                  ['Terms & Conditions', '/terms-and-conditions'],
+                  ['Refund Policy', '/refund-policy'],
+                  ['Contact Us', '/contact-us'],
+                ].map(([label, href]) => (
+                  <Link key={label} href={href} style={{ display: 'block', color: '#475569', fontSize: 14, marginBottom: 10, textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.target.style.color = '#60a5fa'}
+                    onMouseLeave={e => e.target.style.color = '#475569'}>
+                    {label}
+                  </Link>
+                ))}
+              </div>
           </div>
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-            <span style={{ color: '#334155', fontSize: 13 }}>© 2025 CoachingPro. Built for India's coaching institutes.</span>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {[['Admin Login', '/login/admin'], ['Teacher Login', '/login/teacher'], ['Student Login', '/login/student']].map(([label, href]) => (
-                <Link key={label} href={href} style={{ ...S.glass, padding: '6px 14px', borderRadius: 8, fontSize: 12, color: '#64748b', textDecoration: 'none', transition: 'color 0.2s' }}>{label}</Link>
+            <span style={{ color: '#334155', fontSize: 13 }}>© {new Date().getFullYear()} CoachingPro. Built for India's coaching institutes.</span>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              {[
+                ['Privacy Policy', '/privacy-policy'],
+                ['Terms & Conditions', '/terms-and-conditions'],
+                ['Refund Policy', '/refund-policy'],
+                ['Contact Us', '/contact-us'],
+              ].map(([label, href]) => (
+                <Link key={label} href={href} style={{ fontSize: 12, color: '#475569', textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.target.style.color = '#60a5fa'}
+                  onMouseLeave={e => e.target.style.color = '#475569'}>
+                  {label}
+                </Link>
               ))}
             </div>
           </div>
