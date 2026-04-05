@@ -72,7 +72,7 @@ export default function LandingPage() {
     { icon: '✅', title: 'Attendance Tracking', desc: 'Mark present/absent for students and teachers per session with full reports.' },
     { icon: '💰', title: 'Fees Management', desc: 'Generate fee slips, track payments, send receipts by email and download as PDF.' },
     { icon: '🎬', title: 'Study Materials', desc: 'Upload PDFs and MP4 videos. Students can watch videos right inside the portal.' },
-    { icon: '💳', title: 'Online Payments', desc: "Collect fees online via Razorpay. Instant payment confirmation and receipts." },
+    // { icon: '💳', title: 'Online Payments', desc: "Collect fees online via Razorpay. Instant payment confirmation and receipts." },
     { icon: '📊', title: 'Analytics Dashboard', desc: 'Get a complete overview of collections, attendance rates, and performance.' },
   ];
 
@@ -90,7 +90,7 @@ export default function LandingPage() {
     ['✅', 'Attendance Tracking'],
     ['✅', 'Study Materials (PDF & Video)'],
     ['✅', 'Schedule Management'],
-    ['❌', 'Online Fee Collection'],
+    // ['❌', 'Online Fee Collection'],
     ['❌', 'Auto Fee Slip Email'],
     ['❌', 'Razorpay Integration'],
   ];
@@ -99,7 +99,7 @@ export default function LandingPage() {
     ['✅', 'Unlimited Students'],
     ['✅', 'Unlimited Teachers'],
     ['✅', 'Everything in Free'],
-    ['✅', 'Online Fee Collection'],
+    // ['✅', 'Online Fee Collection'],
     ['✅', 'Auto Fee Slip by Email'],
     ['✅', 'PDF Receipt Download'],
     // ['✅', 'Razorpay Integration'],
@@ -179,7 +179,8 @@ export default function LandingPage() {
 
           <p style={{ fontSize: 18, color: '#94a3b8', maxWidth: 580, margin: '0 auto 40px', lineHeight: 1.7 }}>
             All-in-one platform for classes, batches, attendance, fees, study materials, and more.
-            Free to start — upgrade anytime for Razorpay payments.
+            {/* Free to start — upgrade anytime for Razorpay payments. */}
+            Free to start — upgrade anytime.
           </p>
 
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 80 }}>
@@ -375,7 +376,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {['📧 Email Notifications','📄 PDF Generation','💳 Razorpay Payments','🎬 Video Streaming'].map(f => (
+                  {['📧 Email Notifications','📄 PDF Generation',/*'💳 Razorpay Payments',*/'🎬 Video Streaming'].map(f => (
                     <div key={f} style={{ ...S.glass, padding: '8px 14px', borderRadius: 8, fontSize: 12, color: '#93c5fd', textAlign: 'center' }}>{f}</div>
                   ))}
                 </div>
