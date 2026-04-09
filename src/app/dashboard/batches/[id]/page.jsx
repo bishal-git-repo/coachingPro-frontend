@@ -11,41 +11,97 @@ const GREEN  = { ...S.btnPrimary, background: 'linear-gradient(135deg,#059669,#0
 const INDIGO = { ...S.btnPrimary, background: 'linear-gradient(135deg,#4f46e5,#7c3aed)' };
 
 // Bug 7 & 8 fix: fetch file with Authorization header → create blob URL
+// function PdfViewer({ materialId, baseUrl, token }) {
+//   const [blobUrl, setBlobUrl] = useState(null);
+//   const [error, setError] = useState(null);
+//   useEffect(() => {
+//     let url = null;
+//     fetch(`${baseUrl}/materials/${materialId}/stream`, {
+//       headers: { Authorization: `Bearer ${token}` },
+//     })
+//       .then(r => { if (!r.ok) throw new Error('Failed to load PDF'); return r.blob(); })
+//       .then(blob => { url = URL.createObjectURL(blob); setBlobUrl(url); })
+//       .catch(e => setError(e.message));
+//     return () => { if (url) URL.revokeObjectURL(url); };
+//   }, [materialId, baseUrl, token]);
+//   if (error) return <div style={{ color: '#f87171', padding: 20, textAlign: 'center' }}>{error}</div>;
+//   if (!blobUrl) return <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><Spinner size={32} /></div>;
+//   return <iframe src={blobUrl} style={{ width: '100%', height: '70vh', border: 'none', borderRadius: 8 }} title="PDF Viewer" />;
+// }
+
 function PdfViewer({ materialId, baseUrl, token }) {
-  const [blobUrl, setBlobUrl] = useState(null);
+  const [s3Url, setS3Url] = useState(null);
   const [error, setError] = useState(null);
+
   useEffect(() => {
-    let url = null;
+    // Step 1: Call our backend to get a pre-signed S3 URL (returns JSON)
+    // Step 2: Set that URL directly as iframe src — no blob, no CORS issue
     fetch(`${baseUrl}/materials/${materialId}/stream`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then(r => { if (!r.ok) throw new Error('Failed to load PDF'); return r.blob(); })
-      .then(blob => { url = URL.createObjectURL(blob); setBlobUrl(url); })
+      .then(r => { if (!r.ok) throw new Error('Failed to load PDF'); return r.json(); })
+      .then(data => {
+        if (!data.url) throw new Error('No URL returned from server');
+        setS3Url(data.url);
+      })
       .catch(e => setError(e.message));
-    return () => { if (url) URL.revokeObjectURL(url); };
   }, [materialId, baseUrl, token]);
-  if (error) return <div style={{ color: '#f87171', padding: 20, textAlign: 'center' }}>{error}</div>;
-  if (!blobUrl) return <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><Spinner size={32} /></div>;
-  return <iframe src={blobUrl} style={{ width: '100%', height: '70vh', border: 'none', borderRadius: 8 }} title="PDF Viewer" />;
+
+  if (error)  return <div style={{ color:'#f87171', padding:20, textAlign:'center' }}>{error}</div>;
+  if (!s3Url) return <div style={{ display:'flex', justifyContent:'center', padding:40 }}><Spinner size={32} /></div>;
+  // iframe src set directly to S3 URL — browser treats this as navigation, NOT XHR, so no CORS check
+  return <iframe src={s3Url} style={{ width:'100%', height:'75vh', border:'none', borderRadius:8 }} title="PDF Viewer" />;
 }
 
+// function VideoViewer({ materialId, baseUrl, token }) {
+//   const [blobUrl, setBlobUrl] = useState(null);
+//   const [error, setError] = useState(null);
+//   useEffect(() => {
+//     let url = null;
+//     fetch(`${baseUrl}/materials/${materialId}/stream`, {
+//       headers: { Authorization: `Bearer ${token}` },
+//     })
+//       .then(r => { if (!r.ok) throw new Error('Failed to load video'); return r.blob(); })
+//       .then(blob => { url = URL.createObjectURL(blob); setBlobUrl(url); })
+//       .catch(e => setError(e.message));
+//     return () => { if (url) URL.revokeObjectURL(url); };
+//   }, [materialId, baseUrl, token]);
+//   if (error) return <div style={{ color: '#f87171', padding: 20, textAlign: 'center' }}>{error}</div>;
+//   if (!blobUrl) return <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><Spinner size={32} /></div>;
+//   return (
+//     <video controls autoPlay style={{ width: '100%', borderRadius: 10, background: '#000', maxHeight: '70vh' }} src={blobUrl}>
+//       Your browser does not support video.
+//     </video>
+//   );
+// }
+
 function VideoViewer({ materialId, baseUrl, token }) {
-  const [blobUrl, setBlobUrl] = useState(null);
+  const [s3Url, setS3Url] = useState(null);
   const [error, setError] = useState(null);
+
   useEffect(() => {
-    let url = null;
+    // Same pattern — get pre-signed URL from backend, set as video src directly
     fetch(`${baseUrl}/materials/${materialId}/stream`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then(r => { if (!r.ok) throw new Error('Failed to load video'); return r.blob(); })
-      .then(blob => { url = URL.createObjectURL(blob); setBlobUrl(url); })
+      .then(r => { if (!r.ok) throw new Error('Failed to load video'); return r.json(); })
+      .then(data => {
+        if (!data.url) throw new Error('No URL returned from server');
+        setS3Url(data.url);
+      })
       .catch(e => setError(e.message));
-    return () => { if (url) URL.revokeObjectURL(url); };
   }, [materialId, baseUrl, token]);
-  if (error) return <div style={{ color: '#f87171', padding: 20, textAlign: 'center' }}>{error}</div>;
-  if (!blobUrl) return <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><Spinner size={32} /></div>;
+
+  if (error)  return <div style={{ color:'#f87171', padding:20, textAlign:'center' }}>{error}</div>;
+  if (!s3Url) return <div style={{ display:'flex', justifyContent:'center', padding:40 }}><Spinner size={32} /></div>;
+  // video src set directly to S3 URL — browser treats this as a media request, NOT XHR, no CORS
   return (
-    <video controls autoPlay style={{ width: '100%', borderRadius: 10, background: '#000', maxHeight: '70vh' }} src={blobUrl}>
+    <video
+      controls
+      autoPlay
+      src={s3Url}
+      style={{ width:'100%', borderRadius:10, background:'#000', maxHeight:'70vh', display:'block' }}
+    >
       Your browser does not support video.
     </video>
   );
@@ -440,12 +496,12 @@ export default function BatchDetailPage({ params }) {
       </Modal>
 
       {/* PDF Viewer Modal — Bug 7 fix: uses blob URL via fetch with auth header */}
-      <Modal open={!!showViewPdf} onClose={() => setShowViewPdf(null)} title={showViewPdf?.title} maxWidth={800}>
+      <Modal open={!!showViewPdf} onClose={() => setShowViewPdf(null)} title={showViewPdf?.title} maxWidth={860}>
         {showViewPdf && <PdfViewer materialId={showViewPdf.id} baseUrl={BASE_URL} token={token} />}
       </Modal>
 
       {/* Video Viewer Modal — Bug 7 fix: uses blob URL via fetch with auth header */}
-      <Modal open={!!showViewVid} onClose={() => setShowViewVid(null)} title={showViewVid?.title} maxWidth={720}>
+      <Modal open={!!showViewVid} onClose={() => setShowViewVid(null)} title={showViewVid?.title} maxWidth={740}>
         {showViewVid && <VideoViewer materialId={showViewVid.id} baseUrl={BASE_URL} token={token} />}
       </Modal>
 
