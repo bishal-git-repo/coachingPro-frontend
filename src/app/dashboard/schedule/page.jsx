@@ -8,6 +8,13 @@ import api from '../../../lib/api';
 
 const WEEK_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
+function getSafeUrl(url) {
+  if (!url) return '#';
+  return url.startsWith('http://') || url.startsWith('https://')
+    ? url
+    : `https://${url}`;
+}
+
 function getWeekDates(offset = 0) {
   const today = new Date();
   const day = today.getDay();
@@ -49,7 +56,7 @@ function ScheduleCard({ s, accent, onDetail }) {
       <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:8 }}>
         <span style={{ fontSize:11, padding:'3px 10px', borderRadius:8, background:`${STATUS_COLOR[s.status]||'#475569'}18`, color:STATUS_COLOR[s.status]||'#94a3b8', fontWeight:700 }}>{s.status}</span>
         {!isPast && s.meeting_link && (
-          <a href={s.meeting_link} target="_blank" rel="noopener noreferrer"
+          <a href={getSafeUrl(s.meeting_link)} target="_blank" rel="noopener noreferrer"
             style={{ display:'flex', alignItems:'center', gap:5, padding:'5px 12px', background:'rgba(37,99,235,0.15)', border:'1px solid rgba(37,99,235,0.3)', borderRadius:8, color:'#60a5fa', fontSize:12, fontWeight:600, textDecoration:'none' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.845v6.31a1 1 0 0 1-1.447.894L15 14M3 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/></svg>
             Join
@@ -363,7 +370,7 @@ export default function SchedulePage() {
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontSize:14, fontWeight:700, color:'#f1f5f9', marginBottom:2 }}>{s.title||s.batch_name}</div>
                   <div style={{ fontSize:12, color:'#64748b' }}>{s.batch_name} • {s.class_name} • {s.start_time?.slice(0,5)}–{s.end_time?.slice(0,5)}</div>
-                  {s.meeting_link && <a href={s.meeting_link} target="_blank" rel="noopener noreferrer" style={{ fontSize:11, color:'#60a5fa' }}>🔗 Meeting link</a>}
+                  {s.meeting_link && <a href={getSafeUrl(s.meeting_link)} target="_blank" rel="noopener noreferrer" style={{ fontSize:11, color:'#60a5fa' }}>🔗 Meeting link</a>}
                 </div>
                 <span style={{ fontSize:11, padding:'3px 10px', borderRadius:8, background:`${STATUS_COLOR[s.status]||'#475569'}18`, color:STATUS_COLOR[s.status]||'#94a3b8', fontWeight:700 }}>{s.status}</span>
                 <div style={{ display:'flex', gap:6 }}>
@@ -398,7 +405,7 @@ export default function SchedulePage() {
               </div>
             ))}
             {showDetail.meeting_link && (
-              <a href={showDetail.meeting_link} target="_blank" rel="noopener noreferrer"
+              <a href={getSafeUrl(showDetail.meeting_link)} target="_blank" rel="noopener noreferrer"
                 style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, padding:'12px', background:'rgba(37,99,235,0.15)', border:'1px solid rgba(37,99,235,0.3)', borderRadius:10, color:'#60a5fa', fontWeight:700, textDecoration:'none', marginTop:6 }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.845v6.31a1 1 0 0 1-1.447.894L15 14M3 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/></svg>
                 Join Meeting
