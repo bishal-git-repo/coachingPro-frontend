@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 const BRAND   = 'CoachingPro';
-const EMAIL   = 'support@coachingpro.in';
+const EMAIL   = 'support@coachingpro.site';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 function ContactCard({ icon, title, value, href, color }) {
@@ -181,7 +181,7 @@ export default function ContactUs() {
                 <div style={{ marginBottom: 18 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 }}>Subject *</label>
                   <select required value={form.subject} onChange={e => setForm(f => ({...f, subject: e.target.value}))}
-                    style={{ ...inp, cursor: 'pointer' }}
+                    style={{ ...inp,background: '#21262f', cursor: 'pointer' }}
                     onFocus={e => e.target.style.borderColor = '#2563eb'}
                     onBlur={e  => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}>
                     <option value="">Select a topic...</option>

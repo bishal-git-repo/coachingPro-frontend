@@ -201,7 +201,7 @@ export default function LandingPage() {
                   {['#ef4444','#f59e0b','#22c55e'].map(c => <div key={c} style={{ width: 12, height: 12, borderRadius: '50%', background: c, opacity: 0.7 }} />)}
                 </div>
                 <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 6, padding: '5px 14px', fontSize: 12, color: '#64748b', textAlign: 'center' }}>
-                  coachingpro.in/dashboard
+                  coachingpro.site/dashboard
                 </div>
               </div>
 

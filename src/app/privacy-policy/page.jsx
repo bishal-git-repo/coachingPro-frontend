@@ -2,7 +2,7 @@
 import Link from 'next/link';
 
 const BRAND    = 'CoachingPro';
-const EMAIL    = 'support@coachingpro.in';
+const EMAIL    = 'support@coachingpro.site';
 const ADDRESS  = 'India';
 const UPDATED  = 'April 4, 2026';
 

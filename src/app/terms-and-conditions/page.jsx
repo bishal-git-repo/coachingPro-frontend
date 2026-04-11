@@ -2,7 +2,7 @@
 import Link from 'next/link';
 
 const BRAND   = 'CoachingPro';
-const EMAIL   = 'support@coachingpro.in';
+const EMAIL   = 'support@coachingpro.site';
 const UPDATED = 'April 4, 2026';
 const PRICE   = '₹999/month';
 
