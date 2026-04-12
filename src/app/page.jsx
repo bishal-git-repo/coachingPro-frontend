@@ -108,7 +108,7 @@ export default function LandingPage() {
   ];
 
   const testimonials = [
-    { name: 'Rajesh Sharma', role: 'Director, Bright Future Academy', text: 'CoachingPro transformed how we manage 200+ students. Fee collection is now 100% digital.', av: 'RS' },
+    { name: 'Rajesh Sharma', role: 'Director, Bright Future Academy', text: 'Coachstra transformed how we manage 200+ students. Fee collection is now 100% digital.', av: 'RS' },
     { name: 'Priya Mehta', role: 'Owner, Excellence Coaching Center', text: 'The attendance tracking and automated fee slips save us hours every week. Absolutely love it!', av: 'PM' },
     { name: 'Amit Kumar', role: 'Principal, Career Launcher Institute', text: "Best investment for our coaching. Students love the online study material portal with video support.", av: 'AK' },
   ];
@@ -129,7 +129,7 @@ export default function LandingPage() {
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 38, height: 38, background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, boxShadow: '0 0 20px rgba(37,99,235,0.4)' }}>C</div>
-            <span style={{ ...S.displayFont, fontSize: 20, fontWeight: 700, ...S.gradientText }}>CoachingPro</span>
+            <span style={{ ...S.displayFont, fontSize: 20, fontWeight: 700, ...S.gradientText }}>Coachstra</span>
           </div>
 
           {/* Desktop Nav */}
@@ -201,7 +201,7 @@ export default function LandingPage() {
                   {['#ef4444','#f59e0b','#22c55e'].map(c => <div key={c} style={{ width: 12, height: 12, borderRadius: '50%', background: c, opacity: 0.7 }} />)}
                 </div>
                 <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 6, padding: '5px 14px', fontSize: 12, color: '#64748b', textAlign: 'center' }}>
-                  coachingpro.site/dashboard
+                  coachstra.online/dashboard
                 </div>
               </div>
 
@@ -372,7 +372,7 @@ export default function LandingPage() {
                   <div style={{ position: 'absolute', inset: -8, background: 'linear-gradient(135deg,rgba(37,99,235,0.3),rgba(79,70,229,0.3))', borderRadius: '50%', animation: 'pulseRing 2s ease-in-out infinite' }} />
                   <div style={{ width: 120, height: 120, background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 40px rgba(37,99,235,0.4)', position: 'relative' }}>
                     <div style={{ fontSize: 36 }}>🎓</div>
-                    <div style={{ fontSize: 10, fontWeight: 700, marginTop: 4 }}>CoachingPro</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, marginTop: 4 }}>Coachstra</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -504,7 +504,7 @@ export default function LandingPage() {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>C</div>
-                <span style={{ ...S.displayFont, fontWeight: 700, fontSize: 18, ...S.gradientText }}>CoachingPro</span>
+                <span style={{ ...S.displayFont, fontWeight: 700, fontSize: 18, ...S.gradientText }}>Coachstra</span>
               </div>
               <p style={{ color: '#475569', fontSize: 14, lineHeight: 1.7 }}>The complete management platform for coaching institutes in India.</p>
             </div>
@@ -545,7 +545,7 @@ export default function LandingPage() {
               </div>
           </div>
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-            <span style={{ color: '#334155', fontSize: 13 }}>© {new Date().getFullYear()} CoachingPro. Built for India's coaching institutes.</span>
+            <span style={{ color: '#334155', fontSize: 13 }}>© {new Date().getFullYear()} Coachstra. Built for India's coaching institutes.</span>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               {[
                 ['Privacy Policy', '/privacy-policy'],

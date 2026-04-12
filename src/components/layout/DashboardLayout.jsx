@@ -159,7 +159,7 @@ export default function DashboardLayout({ children }) {
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, flexShrink: 0 }}>C</div>
           {sidebarOpen && (
             <div>
-              <div style={{ fontWeight: 800, fontSize: 15, color: '#f1f5f9', fontFamily: "'Space Grotesk', sans-serif", whiteSpace: 'nowrap' }}>CoachingPro</div>
+              <div style={{ fontWeight: 800, fontSize: 15, color: '#f1f5f9', fontFamily: "'Space Grotesk', sans-serif", whiteSpace: 'nowrap' }}>Coachstra</div>
               <div style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 150 }}>{user.coaching_name}</div>
             </div>
           )}

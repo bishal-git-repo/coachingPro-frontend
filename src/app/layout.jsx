@@ -2,7 +2,7 @@ import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
 
 export const metadata = {
-  title: 'CoachingPro — Coaching Management System',
+  title: 'Coachstra — Coaching Management System',
   description: 'Manage your coaching institute with classes, batches, teachers, students, attendance, fees, and study materials.',
 };
 

@@ -84,7 +84,7 @@ export default function RegisterPage() {
       key,
       amount,
       currency,
-      name: 'CoachingPro',
+      name: 'Coachstra',
       description: 'Pro Plan — ₹999/month',
       order_id: orderId,
       prefill: { name: userData.name, email: userData.email },
@@ -109,7 +109,7 @@ export default function RegisterPage() {
           // Update stored user with pro plan
           const proUser = { ...userData, plan:'paid', plan_expires_at: verify.expires_at, role:'admin' };
           localStorage.setItem('user', JSON.stringify(proUser));
-          showToast('🎉 Pro plan activated! Welcome to CoachingPro.');
+          showToast('🎉 Pro plan activated! Welcome to Coachstra.');
           setStep('done');
           router.push('/dashboard');
         } catch (err) {
@@ -193,7 +193,7 @@ export default function RegisterPage() {
         <div style={{ textAlign:'center', marginBottom:28 }}>
           <Link href="/" style={{ textDecoration:'none', display:'inline-flex', alignItems:'center', gap:10 }}>
             <div style={{ width:44, height:44, background:'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:22, color:'#fff' }}>C</div>
-            <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:22, fontWeight:800, background:'linear-gradient(135deg,#60a5fa,#a78bfa)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>CoachingPro</span>
+            <span style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:22, fontWeight:800, background:'linear-gradient(135deg,#60a5fa,#a78bfa)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Coachstra</span>
           </Link>
           <p style={{ color:'#64748b', fontSize:14, marginTop:8 }}>Register your coaching institute</p>
         </div>

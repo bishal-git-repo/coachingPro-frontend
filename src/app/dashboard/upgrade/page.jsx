@@ -64,7 +64,7 @@ function UpgradeInner() {
         key,
         amount,
         currency,
-        name: 'CoachingPro',
+        name: 'Coachstra',
         description: 'Pro Plan — ₹999/month',
         order_id: orderId,
         prefill: {

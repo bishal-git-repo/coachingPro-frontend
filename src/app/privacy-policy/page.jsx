@@ -1,8 +1,8 @@
 'use client';
 import Link from 'next/link';
 
-const BRAND    = 'CoachingPro';
-const EMAIL    = 'support@coachingpro.site';
+const BRAND    = 'Coachstra';
+const EMAIL    = 'support@coachstra.online';
 const ADDRESS  = 'India';
 const UPDATED  = 'April 4, 2026';
 
@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 38, height: 38, background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 18, boxShadow: '0 0 20px rgba(37,99,235,0.4)' }}>C</div>
-            <span style={{ ...S.displayFont, fontSize: 20, fontWeight: 700, ...S.gradientText }}>CoachingPro</span>
+            <span style={{ ...S.displayFont, fontSize: 20, fontWeight: 700, ...S.gradientText }}>Coachstra</span>
           </div>
           </Link>
           <nav style={{ display: 'flex', gap: 20, fontSize: 13 }}>
