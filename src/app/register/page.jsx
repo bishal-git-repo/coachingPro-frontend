@@ -201,7 +201,7 @@ export default function RegisterPage() {
         {/* Plan Selector */}
         <div style={{ marginBottom:24 }}>
           <p style={{ fontSize:13, color:'#94a3b8', marginBottom:12, fontWeight:600, textAlign:'center' }}>Choose your plan</p>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div className="form-grid-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
             {PLANS.map(p => (
               <div key={p.id} onClick={() => setPlan(p.id)}
                 style={{ background:plan===p.id?`${p.accent}15`:'rgba(255,255,255,0.03)', border:`2px solid ${plan===p.id?p.accent:'rgba(255,255,255,0.08)'}`, borderRadius:14, padding:'16px 14px', cursor:'pointer', textAlign:'center', transition:'all 0.2s', userSelect:'none', position:'relative' }}>
@@ -256,7 +256,7 @@ export default function RegisterPage() {
               <input type="text" value={form.coaching_name} onChange={set('coaching_name')} placeholder="Bright Future Academy" required style={S.input}
                 onFocus={e=>e.target.style.borderColor='rgba(96,165,250,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'} />
             </div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14, marginBottom:0 }}>
+            <div className="form-grid-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14, marginBottom:0 }}>
               <div style={{ marginBottom:16 }}>
                 <label style={S.label}>Email *</label>
                 <input type="email" value={form.email} onChange={set('email')} placeholder="you@example.com" required style={S.input}

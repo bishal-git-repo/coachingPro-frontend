@@ -177,3 +177,34 @@ textarea.cp-input::placeholder { color: #475569; }
 .status-pending  { background: rgba(217,119,6,0.15);  color: #fbbf24; border: 1px solid rgba(217,119,6,0.3); }
 .status-paid     { background: rgba(22,163,74,0.15);  color: #4ade80; border: 1px solid rgba(22,163,74,0.3); }
 .status-overdue  { background: rgba(220,38,38,0.15);  color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
+
+/* ── ADDITIONAL MOBILE RESPONSIVE GRIDS ───────────────────────── */
+@media (max-width: 1024px) {
+  .four-col-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 600px) {
+  .four-col-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 900px) {
+  .eco-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+  .desktop-nav { display: none !important; }
+}
+
+@media (max-width: 768px) {
+  .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+  .contact-grid { grid-template-columns: 1fr !important; }
+  .hero-mockup-grid { grid-template-columns: 1fr !important; }
+  .mockup-sidebar { display: none !important; }
+  .mockup-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .mockup-two-col { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 500px) {
+  .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .role-grid { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 600px) {
+  .legal-nav-container { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+}

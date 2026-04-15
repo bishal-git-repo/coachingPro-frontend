@@ -105,7 +105,7 @@ export default function StudentsPage() {
         <EmptyState title="No students found" desc={search ? 'Try a different search' : 'Add your first student'}
           action={!search && <button onClick={() => { setForm(INIT); setShowAdd(true); }} style={S.btnPrimary}>Add Student</button>} />
       ) : (
-        <div className="table-wrap" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
+        <div className="table-wrap" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflowX: 'auto' }}>
           <table style={S.table}>
             <thead>
               <tr>{['Student','Contact','Batches','Status','Actions'].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
@@ -223,7 +223,7 @@ export default function StudentsPage() {
                 <div style={{ marginTop: 6 }}><StatusBadge status={showView.status} /></div>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {[
                 { label: 'Phone', value: showView.phone || '—' },
                 { label: 'Roll No.', value: showView.roll_number || '—' },

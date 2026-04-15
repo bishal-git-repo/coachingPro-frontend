@@ -298,7 +298,7 @@ export default function SchedulePage() {
       ) : viewMode === 'grid' ? (
         /* ── ADMIN: Grid view ── */
         <>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:10, marginBottom:10 }}>
+          <div className="timetable-grid" style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:10, marginBottom:10 }}>
             {WEEK_DAYS.map((day, i) => {
               const date = weekDates[i]; const isToday = date === today;
               return (
@@ -311,7 +311,7 @@ export default function SchedulePage() {
               );
             })}
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:10, minHeight:400 }}>
+          <div className="timetable-grid" style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:10, minHeight:400 }}>
             {WEEK_DAYS.map((day, i) => {
               const date = weekDates[i]; const isToday = date === today;
               const daySessions = (timetable[date]||[]).sort((a,b) => a.start_time.localeCompare(b.start_time));
@@ -428,7 +428,7 @@ export default function SchedulePage() {
                 <option value="">Select batch</option>
                 {allBatches.map(b => <option key={b.id} value={b.id}>{b.name} — {b.class_name}</option>)}
               </FormSelect>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 16px' }}>
+              <div className="form-grid-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 16px' }}>
                 <div style={{ marginBottom:16 }}>
                   <label style={S.label}>Date * <span style={{ fontSize:11, color:'#64748b' }}>(cannot be past)</span></label>
                   <input type="date" value={form.scheduled_date} onChange={set('scheduled_date')}

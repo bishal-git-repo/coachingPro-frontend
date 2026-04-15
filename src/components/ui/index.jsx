@@ -246,7 +246,7 @@ export function SearchInput({ value, onChange, placeholder = 'Search...' }) {
 // ── PAGE HEADER ──────────────────────────────────────────────
 export function PageHeader({ title, subtitle, action }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
+    <div className="page-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32, flexWrap: 'wrap', gap: 16 }}>
       <div>
         <h1 style={S.pageTitle}>{title}</h1>
         {subtitle && <p style={{ color: '#64748b', fontSize: 14, marginTop: 4 }}>{subtitle}</p>}

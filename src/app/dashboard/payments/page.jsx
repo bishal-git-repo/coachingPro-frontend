@@ -229,7 +229,7 @@ function AdminPaymentsView() {
           )}
 
           {/* Payments table */}
-          <div className="table-wrap" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflow:'hidden' }}>
+          <div className="table-wrap" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflowX:'auto' }}>
             <table style={S.table}>
               <thead>
                 <tr>{['Teacher','Month','Amount','Mode','Date','Ref'].map(h=><th key={h} style={S.th}>{h}</th>)}</tr>
@@ -268,7 +268,7 @@ function AdminPaymentsView() {
             </div>
           ) : null; })()}
           <FormInput label="Amount (₹) *" type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} required />
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 16px' }}>
+          <div className="form-grid-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 16px' }}>
             <FormInput label="Payment Date *" type="date" value={form.payment_date} onChange={e=>setForm(f=>({...f,payment_date:e.target.value}))} required />
             <FormInput label="Month/Year" type="month" value={form.month_year} onChange={e=>setForm(f=>({...f,month_year:e.target.value}))} />
           </div>

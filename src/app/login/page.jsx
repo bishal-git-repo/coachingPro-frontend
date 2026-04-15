@@ -67,7 +67,7 @@ export default function LoginPage() {
         </div>
 
         {/* Role selector */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 24 }}>
+        <div className="role-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 24 }}>
           {Object.entries(roleConfig).map(([key, cfg]) => (
             <button key={key} onClick={() => setRole(key)} style={{
               padding: '14px 8px', borderRadius: 12, border: `2px solid ${role === key ? cfg.color : 'rgba(255,255,255,0.08)'}`,

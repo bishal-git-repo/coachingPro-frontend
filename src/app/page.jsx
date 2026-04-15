@@ -133,7 +133,7 @@ export default function LandingPage() {
           </div>
 
           {/* Desktop Nav */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 36, '@media(maxWidth:768px)': { display: 'none' } }} className="desktop-nav">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 36 }} className="desktop-nav">
             {['Features', 'How It Works', 'Pricing'].map(item => (
               <a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`}
                 style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'color 0.2s' }}
@@ -146,7 +146,10 @@ export default function LandingPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <Link href="/login" style={{ color: '#94a3b8', fontSize: 14, fontWeight: 500, textDecoration: 'none', padding: '8px 16px' }}>Login</Link>
-            <Link href="/register" style={{ ...S.btnPrimary, padding: '10px 22px', fontSize: 14 }}>Get Started Free</Link>
+            <Link href="/register" style={{ ...S.btnPrimary, padding: '8px 16px', fontSize: 14 }}>
+              <span className="hidden md:inline">Get Started Free</span>
+              <span className="md:hidden">SignUp</span>
+            </Link>
           </div>
         </div>
       </nav>
@@ -207,9 +210,9 @@ export default function LandingPage() {
 
               {/* Dashboard content */}
               <div style={{ padding: 24, background: 'linear-gradient(135deg, #0f172a, #1e1b4b)' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 16 }}>
+                <div className="hero-mockup-grid" style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: 16 }}>
                   {/* Sidebar */}
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12 }}>
+                  <div className="mockup-sidebar" style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 12 }}>
                     <div style={{ height: 6, background: 'rgba(96,165,250,0.4)', borderRadius: 4, marginBottom: 16 }} />
                     {['Dashboard','Students','Teachers','Classes','Batches','Fees','Materials'].map((item, i) => (
                       <div key={item} style={{ padding: '8px 10px', borderRadius: 8, fontSize: 12, color: i === 5 ? '#60a5fa' : '#64748b', background: i === 5 ? 'rgba(96,165,250,0.1)' : 'transparent', marginBottom: 2 }}>{item}</div>
@@ -217,7 +220,7 @@ export default function LandingPage() {
                   </div>
                   {/* Main area */}
                   <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
+                    <div className="mockup-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
                       {[
                         { label: 'Students', val: '248', icon: '👨‍🎓', color: 'rgba(96,165,250,0.15)' },
                         { label: 'Teachers', val: '12', icon: '👨‍🏫', color: 'rgba(167,139,250,0.15)' },
@@ -231,7 +234,7 @@ export default function LandingPage() {
                         </div>
                       ))}
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div className="mockup-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                       <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 14 }}>
                         <div style={{ fontSize: 11, color: '#64748b', marginBottom: 10 }}>Recent Students</div>
                         {['Rahul Verma','Ananya Singh','Karan Patel'].map(n => (
@@ -263,7 +266,7 @@ export default function LandingPage() {
       {/* ── STATS ── */}
       <section style={{ padding: '60px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={S.container}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          <div className="four-col-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
             {[
               { end: 500, suffix: '+', label: 'Coaching Institutes' },
               { end: 50000, suffix: '+', label: 'Students Managed' },
@@ -348,7 +351,7 @@ export default function LandingPage() {
           </div>
 
           <div style={{ ...S.glass, borderRadius: 24, padding: 40 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 32, alignItems: 'center' }}>
+            <div className="eco-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 32, alignItems: 'center' }}>
               {/* Left: Admin */}
               <div>
                 <div style={{ background: 'rgba(37,99,235,0.12)', border: '1px solid rgba(96,165,250,0.25)', borderRadius: 16, padding: 20, textAlign: 'center', marginBottom: 20 }}>
@@ -411,7 +414,7 @@ export default function LandingPage() {
             <p style={{ color: '#64748b' }}>No hidden fees. No per-student charges. One simple monthly plan.</p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
+          <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
             {/* Free Plan */}
             <div style={{ ...S.glass, borderRadius: 24, padding: 36 }}>
               <div style={{ display: 'inline-block', background: 'rgba(100,116,139,0.2)', border: '1px solid rgba(100,116,139,0.3)', borderRadius: 8, padding: '4px 14px', fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 20 }}>FREE PLAN</div>
@@ -500,7 +503,7 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '60px 0 32px' }}>
         <div style={S.container}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
+          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 48 }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                 <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#2563eb,#4f46e5)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>C</div>

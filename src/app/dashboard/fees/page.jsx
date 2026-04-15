@@ -208,7 +208,7 @@ export default function FeesPage() {
       ) : filtered.length === 0 ? (
         <EmptyState title="No fee records" desc={filterStatus||filterMonth ? 'Try different filters' : isAdmin ? 'Add your first fee record' : 'No fees assigned yet'} />
       ) : (
-        <div className="table-wrap" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflow:'hidden' }}>
+        <div className="table-wrap" style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:16, overflowX:'auto' }}>
           <table style={S.table}>
             <thead>
               <tr>{['Student','Batch','Month','Amount','Status','Actions'].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>

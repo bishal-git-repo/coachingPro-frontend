@@ -102,7 +102,7 @@ export default function TeachersPage() {
         <EmptyState title="No teachers found" desc="Add your first teacher"
           action={!search && <button onClick={() => { setForm(INIT); setShowAdd(true); }} style={btnPurple}>Add Teacher</button>} />
       ) : (
-        <div className="table-wrap" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
+        <div className="table-wrap" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflowX: 'auto' }}>
           <table style={S.table}>
             <thead>
               <tr>{['Teacher','Subject / Qual.','Batches','Salary','Status','Actions'].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
@@ -217,7 +217,7 @@ export default function TeachersPage() {
                 <div style={{ marginTop: 6 }}><StatusBadge status={showView.status} /></div>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+            <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
               {[
                 { label: 'Phone', value: showView.phone || '—' },
                 { label: 'Subject', value: showView.subject || '—' },

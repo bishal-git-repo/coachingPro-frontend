@@ -222,7 +222,7 @@ export default function MaterialsPage() {
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Upload Study Material" maxWidth={520}>
         <form onSubmit={handleUpload}>
           <FormInput label="Title *" value={form.title} onChange={e => setForm(f=>({...f,title:e.target.value}))} placeholder="Chapter 5 — Algebra Notes" required />
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 16px' }}>
+          <div className="form-grid-2" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0 16px' }}>
             <div style={{ marginBottom:16 }}>
               <label style={S.label}>Type *</label>
               <select value={form.type} onChange={e => setForm(f=>({...f,type:e.target.value}))} className="cp-input" style={S.input}>
@@ -246,7 +246,7 @@ export default function MaterialsPage() {
               onDragOver={e => e.preventDefault()}
               onDrop={e => { e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) setFile(f); }}>
               <input ref={fileRef} type="file" accept={form.type==='pdf'?'.pdf':'.mp4,video/mp4'} style={{ display:'none' }} onChange={e => setFile(e.target.files[0])} />
-              {file ? <div><div style={{ fontSize:14, color:'#60a5fa', fontWeight:600 }}>{file.name}</div></div>
+              {file ? <div><div style={{ fontSize:14, color:'#60a5fa', fontWeight:600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{file.name}</div></div>
                 : <div style={{ color:'#64748b', fontSize:14 }}>Click or drag & drop your {form.type==='pdf'?'PDF':'MP4'} here</div>}
             </div>
           </div>

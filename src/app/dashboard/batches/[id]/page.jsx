@@ -292,7 +292,7 @@ export default function BatchDetailPage({ params }) {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div className="two-col-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         {/* ── Students ── */}
         <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -361,12 +361,12 @@ export default function BatchDetailPage({ params }) {
 
       {/* ── Study Materials ── */}
       <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20, marginTop: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: 8 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
             Study Materials ({materials.length})
           </h2>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: 4 }}>
               {[['all','All'],['pdf','PDF'],['video','Video']].map(([v,l]) => (
                 <button key={v} onClick={() => setFilterType(v)} style={{ padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', border: `1px solid ${filterType === v ? 'rgba(124,58,237,0.5)' : 'rgba(255,255,255,0.1)'}`, background: filterType === v ? 'rgba(124,58,237,0.2)' : 'transparent', color: filterType === v ? '#a78bfa' : '#64748b', transition: 'all 0.2s' }}>{l}</button>
@@ -466,7 +466,7 @@ export default function BatchDetailPage({ params }) {
       <Modal open={showUpload} onClose={() => setShowUpload(false)} title="Upload Study Material" maxWidth={460}>
         <form onSubmit={handleUpload}>
           <FormInput label="Title *" value={matForm.title} onChange={e => setMatForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Chapter 5 Notes" required />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+          <div className="form-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
             <div style={{ marginBottom: 16 }}>
               <label style={S.label}>Type *</label>
               <select value={matForm.type} onChange={e => setMatForm(f => ({ ...f, type: e.target.value }))} className="cp-input" style={S.input}>
@@ -482,7 +482,7 @@ export default function BatchDetailPage({ params }) {
               onClick={() => document.getElementById('bmat-file').click()}>
               <input id="bmat-file" type="file" accept={matForm.type === 'pdf' ? '.pdf' : '.mp4,video/*'} style={{ display: 'none' }} onChange={e => setMatFile(e.target.files[0])} />
               {matFile ? (
-                <div style={{ fontSize: 13, color: '#a78bfa', fontWeight: 600 }}>{matFile.name}</div>
+                <div style={{ fontSize: 13, color: '#a78bfa', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>{matFile.name}</div>
               ) : (
                 <div style={{ color: '#64748b', fontSize: 13 }}>Click to choose {matForm.type === 'pdf' ? 'PDF' : 'MP4'}</div>
               )}

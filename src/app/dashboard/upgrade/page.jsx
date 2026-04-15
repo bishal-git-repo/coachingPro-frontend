@@ -159,7 +159,7 @@ function UpgradeInner() {
         </div>
 
         {/* Plan comparison */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:36 }}>
+        <div className="two-col-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20, marginBottom:36 }}>
           {/* Free plan */}
           <div style={{ background:'rgba(255,255,255,0.04)', border:`2px solid ${!isPro ? 'rgba(37,99,235,0.4)' : 'rgba(255,255,255,0.08)'}`, borderRadius:20, padding:28 }}>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:20 }}>
