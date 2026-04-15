@@ -26,9 +26,9 @@ function StatBox({ label, value, color, href, icon, router }) {
       onMouseEnter={e=>{if(href){e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow=`0 8px 24px ${color}22`;}}}
       onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}>
       <div style={{ width:52,height:52,background:`${color}22`,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,color }}>{icon}</div>
-      <div>
-        <div style={{ fontSize:28,fontWeight:800,color:'#f1f5f9',fontFamily:"'Space Grotesk',sans-serif",lineHeight:1.1 }}>{value}</div>
-        <div style={{ fontSize:13,color:'#94a3b8',marginTop:2 }}>{label}</div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize:28,fontWeight:800,color:'#f1f5f9',fontFamily:"'Space Grotesk',sans-serif",lineHeight:1.1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{value}</div>
+        <div style={{ fontSize:13,color:'#94a3b8',marginTop:2, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{label}</div>
       </div>
     </div>
   );

@@ -37,6 +37,7 @@ export default function FeesPage() {
   const [filterBatch, setFilterBatch] = useState('');
   const [filterMonth, setFilterMonth] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showDelete, setShowDelete] = useState(null);
 
   const initForm = { student_id:'', batch_id:'', amount:'', due_date:'', month_year:new Date().toISOString().slice(0,7), description:'' };
   const [form, setForm] = useState(initForm);
@@ -105,7 +106,7 @@ export default function FeesPage() {
   }
 
   async function handleDeleteFee(fee) {
-    if (!confirm(`Delete fee record for ${fee.student_name} (₹${fee.amount})?`)) return;
+    setSaving(true);
     try {
       await api.deleteFee(fee.id);
       showToast('Fee record deleted');
@@ -115,7 +116,9 @@ export default function FeesPage() {
       ]);
       setFees(feesRes.data||[]);
       setAnalytics(analyticsRes.data?.summary||analyticsRes.data);
+      setShowDelete(null);
     } catch (e) { showToast(e.message,'error'); }
+    finally { setSaving(false); }
   }
 
   async function handleDownload(fee) {
@@ -242,7 +245,7 @@ export default function FeesPage() {
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                             </button>
                             {displayStatus !== 'paid' && (
-                              <button onClick={() => handleDeleteFee(f)} style={{ ...S.btnGhost, padding:'6px 10px', fontSize:12, color:'#f87171', borderColor:'rgba(220,38,38,0.3)' }} title="Delete">
+                              <button onClick={() => setShowDelete(f)} style={{ ...S.btnGhost, padding:'6px 10px', fontSize:12, color:'#f87171', borderColor:'rgba(220,38,38,0.3)' }} title="Delete">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
                               </button>
                             )}
@@ -321,6 +324,20 @@ export default function FeesPage() {
             <button type="submit" style={{ ...S.btnPrimary, background:'linear-gradient(135deg,#16a34a,#15803d)' }} disabled={saving}>{saving ? <Spinner size={16} color="#fff" /> : 'Mark as Paid'}</button>
           </div>
         </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal open={!!showDelete} onClose={() => setShowDelete(null)} title="Delete Fee Record" maxWidth={400}>
+        <div style={{ padding: '8px 0 24px 0', fontSize: 15, color: '#e2e8f0', lineHeight: 1.5 }}>
+          Are you sure you want to delete the fee record for <strong style={{color:'#fff'}}>{showDelete?.student_name}</strong> amounting to <strong style={{color:'#f87171'}}>₹{showDelete?.amount ? Number(showDelete.amount).toLocaleString('en-IN') : ''}</strong>?<br/>
+          <span style={{ fontSize: 13, color: '#94a3b8', display: 'inline-block', marginTop: 8 }}>This action cannot be undone.</span>
+        </div>
+        <div style={{ display:'flex', gap:12, justifyContent:'flex-end' }}>
+          <button type="button" onClick={() => setShowDelete(null)} style={S.btnGhost}>Cancel</button>
+          <button type="button" onClick={() => handleDeleteFee(showDelete)} style={{ ...S.btnPrimary, background:'linear-gradient(135deg,#dc2626,#991b1b)' }} disabled={saving}>
+            {saving ? <Spinner size={16} color="#fff" /> : 'Yes, Delete'}
+          </button>
+        </div>
       </Modal>
     </DashboardLayout>
   );

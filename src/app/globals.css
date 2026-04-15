@@ -43,6 +43,18 @@ body {
 .cp-input:hover:not(:focus) {
   border-color: rgba(255,255,255,0.18);
 }
+/* Fix mobile calendar icon not showing */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  display: block;
+  filter: invert(1);
+  cursor: pointer;
+}
+input[type="date"].cp-input,
+input[type="time"].cp-input {
+  color-scheme: dark;
+}
 /* Fix select option bg on all browsers */
 .cp-input option {
   background: #1e293b;
