@@ -220,3 +220,54 @@ textarea.cp-input::placeholder { color: #475569; }
 @media (max-width: 600px) {
   .legal-nav-container { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
 }
+
+/* ── REFERRAL PORTAL RESPONSIVE STYLES ── */
+.referral-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.referral-grid-equal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.referral-grid-student-overview {
+  display: grid;
+  grid-template-columns: 5fr 4fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.referral-card-locked {
+  padding: 40px !important;
+}
+
+.referral-activity-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .referral-grid,
+  .referral-grid-equal,
+  .referral-grid-student-overview {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .referral-card-locked {
+    padding: 28px 20px !important;
+  }
+  .referral-activity-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+}

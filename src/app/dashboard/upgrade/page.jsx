@@ -47,17 +47,69 @@ function UpgradeInner() {
   const [success, setSuccess] = useState(false);
   const [expiresAt, setExpiresAt] = useState(null);
 
+  // Referral / Coupon state variables
+  const [code, setCode] = useState('');
+  const [codeLoading, setCodeLoading] = useState(false);
+  const [appliedCode, setAppliedCode] = useState(null); // { type, code, discountPercent, discountAmount, amount, message }
+  const [codeError, setCodeError] = useState('');
+
   // If already pro, show current plan info
   const isPro = user?.plan === 'paid';
+
+  async function handleApplyCode(e) {
+    e.preventDefault();
+    if (!code.trim()) return;
+
+    setCodeLoading(true);
+    setCodeError('');
+    setAppliedCode(null);
+
+    try {
+      const res = await api.validatePlanCode(code.trim());
+      setAppliedCode({
+        type: res.data.type,
+        code: code.trim().toUpperCase(),
+        discountPercent: res.data.discountPercent,
+        discountAmount: res.data.discountAmount,
+        amount: res.data.amount,
+        message: res.data.message
+      });
+      showToast(res.data.message);
+    } catch (err) {
+      setCodeError(err.message || 'Invalid coupon or referral code.');
+      showToast(err.message || 'Invalid coupon or referral code.', 'error');
+    } finally {
+      setCodeLoading(false);
+    }
+  }
+
+  function handleRemoveCode() {
+    setAppliedCode(null);
+    setCode('');
+    setCodeError('');
+  }
 
   async function handleUpgrade() {
     setLoading(true);
     try {
+      // 1. If 100% OFF Coupon is applied, claim it directly!
+      if (appliedCode && appliedCode.type === 'coupon') {
+        const verify = await api.claimCoupon(appliedCode.code);
+        updateUser({ plan: 'paid', plan_expires_at: verify.expiresAt });
+        setExpiresAt(verify.expiresAt);
+        setSuccess(true);
+        showToast('🎉 Subscription upgraded/extended successfully!');
+        setLoading(false);
+        return;
+      }
+
+      // 2. Otherwise, pay with Razorpay
       const loaded = await loadRazorpay();
       if (!loaded) { showToast('Failed to load payment gateway. Check your connection.', 'error'); setLoading(false); return; }
 
-      // Create Razorpay order
-      const order = await api.createPlanOrder();
+      // Pass the referral code to createPlanOrder if applied
+      const referralCode = appliedCode && appliedCode.type === 'referral' ? appliedCode.code : '';
+      const order = await api.createPlanOrder({ referralCode });
       const { orderId, amount, currency, key } = order.data;
 
       const options = {
@@ -65,7 +117,7 @@ function UpgradeInner() {
         amount,
         currency,
         name: 'Coachstra',
-        description: 'Pro Plan — ₹999/month',
+        description: appliedCode && appliedCode.type === 'referral' ? 'Pro Plan — ₹949/month (Discounted)' : 'Pro Plan — ₹999/month',
         order_id: orderId,
         prefill: {
           name: user?.name || '',
@@ -84,6 +136,7 @@ function UpgradeInner() {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              referral_code: referralCode, // Pass this to ensure referrer rewards are processed!
             });
             // Update user context to reflect pro plan
             updateUser({ plan: 'paid', plan_expires_at: verify.expires_at });
@@ -107,9 +160,8 @@ function UpgradeInner() {
 
     } catch (err) {
       console.error('Full error:', err);
-  console.error('Response:', err.response);
-  showToast(err.message || 'Could not initiate payment', 'error');
-  setLoading(false);
+      showToast(err.message || 'Could not initiate payment', 'error');
+      setLoading(false);
     }
   }
 
@@ -138,6 +190,9 @@ function UpgradeInner() {
       </DashboardLayout>
     );
   }
+
+  // Calculate pricing based on applied codes
+  const displayPrice = appliedCode && appliedCode.type === 'coupon' ? 0 : appliedCode && appliedCode.type === 'referral' ? 949 : 999;
 
   return (
     <DashboardLayout>
@@ -191,8 +246,11 @@ function UpgradeInner() {
               <div>
                 <div style={{ fontSize:16, fontWeight:800, color:'#f1f5f9' }}>Pro Plan</div>
                 <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
-                  <span style={{ fontSize:24, fontWeight:800, color:'#fbbf24' }}>₹999</span>
-                  <span style={{ fontSize:12, color:'#64748b' }}>/month</span>
+                  <span style={{ fontSize:24, fontWeight:800, color:'#fbbf24', textDecoration: displayPrice !== 999 ? 'line-through' : 'none', opacity: displayPrice !== 999 ? 0.5 : 1 }}>₹999</span>
+                  {displayPrice !== 999 && (
+                    <span style={{ fontSize:24, fontWeight:800, color:'#fbbf24', marginLeft:8 }}>₹{displayPrice}</span>
+                  )}
+                  <span style={{ fontSize:12, color:'#64748b', marginLeft:4 }}>/month</span>
                 </div>
               </div>
             </div>
@@ -210,6 +268,93 @@ function UpgradeInner() {
           </div>
         </div>
 
+        {/* Promo Coupon / Referral Code Input section */}
+        <div style={{ 
+          background: 'rgba(255,255,255,0.02)', 
+          border: '1px solid rgba(255,255,255,0.06)', 
+          borderRadius: 16, 
+          padding: 20, 
+          marginBottom: 28,
+          textAlign: 'left'
+        }}>
+          <h4 style={{ margin: '0 0 12px 0', fontSize: 14, fontWeight: 700, color: '#f1f5f9', fontFamily: "'Space Grotesk', sans-serif" }}>
+            Promo Coupon / Referral Code
+          </h4>
+          
+          {appliedCode ? (
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between', 
+              background: appliedCode.type === 'coupon' ? 'rgba(124,58,237,0.12)' : 'rgba(22,163,74,0.1)', 
+              border: `1px solid ${appliedCode.type === 'coupon' ? 'rgba(124,58,237,0.3)' : 'rgba(22,163,74,0.25)'}`, 
+              borderRadius: 10, 
+              padding: '10px 16px' 
+            }}>
+              <div>
+                <span style={{ fontSize: 11, background: appliedCode.type === 'coupon' ? '#7c3aed' : '#16a34a', color: '#fff', padding: '2px 8px', borderRadius: 4, fontWeight: 800, textTransform: 'uppercase', marginRight: 10 }}>
+                  {appliedCode.type} applied
+                </span>
+                <strong style={{ color: '#fff', fontFamily: 'monospace', fontSize: 14 }}>{appliedCode.code}</strong>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>
+                  {appliedCode.message}
+                </div>
+              </div>
+              <button onClick={handleRemoveCode} style={{ background: 'transparent', border: 'none', color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 8 }}>
+                Remove
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleApplyCode} style={{ display: 'flex', gap: 10 }}>
+              <input 
+                type="text" 
+                placeholder="Enter referral code or coupon (e.g. COUP-...)" 
+                value={code}
+                onChange={e => setCode(e.target.value)}
+                disabled={codeLoading}
+                style={{ 
+                  flex: 1, 
+                  background: 'rgba(255,255,255,0.04)', 
+                  border: '1px solid rgba(255,255,255,0.08)', 
+                  borderRadius: 10, 
+                  padding: '11px 16px', 
+                  fontSize: 13, 
+                  color: '#fff', 
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={e => e.target.style.borderColor = '#fbbf24'}
+                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+              />
+              <button 
+                type="submit" 
+                disabled={codeLoading || !code.trim()}
+                style={{ 
+                  background: 'rgba(255,255,255,0.08)', 
+                  color: '#fff', 
+                  border: '1px solid rgba(255,255,255,0.12)', 
+                  borderRadius: 10, 
+                  padding: '0 20px', 
+                  fontSize: 13, 
+                  fontWeight: 600, 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={e => { if(!codeLoading && code.trim()) e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+              >
+                {codeLoading ? <Spinner size={14} color="#fff" /> : 'Apply'}
+              </button>
+            </form>
+          )}
+          
+          {codeError && (
+            <div style={{ color: '#f87171', fontSize: 12, marginTop: 8 }}>
+              ⚠️ {codeError}
+            </div>
+          )}
+        </div>
+
         {/* CTA */}
         {isPro ? (
           <div style={{ textAlign:'center' }}>
@@ -220,7 +365,9 @@ function UpgradeInner() {
             <div style={{ display:'flex', gap:12, justifyContent:'center' }}>
               <button onClick={handleUpgrade} disabled={loading}
                 style={{ background:'linear-gradient(135deg,#d97706,#b45309)', color:'#fff', border:'none', borderRadius:12, padding:'12px 28px', fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:8 }}>
-                {loading ? <Spinner size={16} color="#fff"/> : '↻ Renew / Extend — ₹999'}
+                {loading ? <Spinner size={16} color="#fff"/> : (
+                  appliedCode && appliedCode.type === 'coupon' ? 'Claim 100% OFF Month' : `↻ Renew / Extend — ₹${displayPrice}`
+                )}
               </button>
               <button onClick={() => router.push('/dashboard')}
                 style={{ background:'rgba(255,255,255,0.06)', color:'#94a3b8', border:'1px solid rgba(255,255,255,0.1)', borderRadius:12, padding:'12px 24px', fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'inherit' }}>
@@ -231,12 +378,16 @@ function UpgradeInner() {
         ) : (
           <div style={{ textAlign:'center' }}>
             <div style={{ background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:14, padding:'16px 24px', marginBottom:24, display:'inline-block' }}>
-              <p style={{ color:'#64748b', fontSize:13 }}>Secure payment powered by Razorpay · Cancel anytime</p>
+              <p style={{ color:'#64748b', fontSize:13 }}>
+                {appliedCode && appliedCode.type === 'coupon' ? 'Claim free with no card details required' : 'Secure payment powered by Razorpay · Cancel anytime'}
+              </p>
             </div>
             <div style={{ display:'flex', gap:12, justifyContent:'center', flexWrap:'wrap' }}>
               <button onClick={handleUpgrade} disabled={loading}
                 style={{ background:'linear-gradient(135deg,#d97706,#b45309)', color:'#fff', border:'none', borderRadius:12, padding:'14px 36px', fontSize:16, fontWeight:700, cursor:'pointer', fontFamily:'inherit', display:'flex', alignItems:'center', gap:10, boxShadow:'0 8px 24px rgba(217,119,6,0.3)' }}>
-                {loading ? <Spinner size={18} color="#fff"/> : <>⭐ Upgrade to Pro — ₹999/mo</>}
+                {loading ? <Spinner size={18} color="#fff"/> : (
+                  appliedCode && appliedCode.type === 'coupon' ? 'Claim 100% OFF Coupon — ₹0' : `⭐ Upgrade to Pro — ₹${displayPrice}/mo`
+                )}
               </button>
               {fromRegister ? (
                 <button onClick={() => router.push('/dashboard')}

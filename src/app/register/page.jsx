@@ -24,7 +24,7 @@ const PLANS = [
     sub: '/month',
     icon: '⭐',
     accent: '#d97706',
-    features: ['Unlimited students', 'Unlimited teachers', /*'Razorpay payments',*/ 'Fee slip email delivery', 'Priority support'],
+    features: ['Unlimited students', 'Unlimited teachers', 'Fee slip email delivery', 'Priority support'],
     badge: 'RECOMMENDED',
   },
 ];
@@ -47,33 +47,56 @@ export default function RegisterPage() {
   const [step, setStep] = useState('form'); // 'form' | 'paying' | 'done'
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
+
+  // Coupon / referral code state
+  const [promoCode, setPromoCode] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState(null); // { type, code, amount, message }
+  const [promoError, setPromoError] = useState('');
+
   const { login } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('plan') === 'paid') setPlan('paid');
-}, []);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('plan') === 'paid') setPlan('paid');
+  }, []);
+
+  // Reset promo state when plan changes
+  useEffect(() => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoError('');
+  }, [plan]);
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  async function openRazorpay(userData, tokens) {
-    // tokens already set, user logged in — now open payment
+  // ---------- Promo code validation (only works after registration, since we need auth) ----------
+  // We'll validate on registration submit if there's a promo code. For now, we do a quick
+  // client-side format check and store the code; actual validation happens server-side on createPlanOrder.
+  // However, to give instant feedback, we try validating after registering (before payment).
+
+  function handleRemovePromo() {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoError('');
+  }
+
+  async function openRazorpay(userData, appliedCode) {
     const loaded = await loadRazorpay();
     if (!loaded) {
-      showToast('Payment gateway unavailable. You can upgrade later from Settings.', 'error');
-      // Still log them in but as free
-      localStorage.setItem('user', JSON.stringify({ ...userData, role:'admin' }));
+      showToast('Payment gateway unavailable. You can upgrade later from the dashboard.', 'error');
+      localStorage.setItem('user', JSON.stringify({ ...userData, role: 'admin' }));
       router.push('/dashboard');
       return;
     }
 
     let order;
     try {
-      order = await api.createPlanOrder();
+      order = await api.createPlanOrder({ referralCode: appliedCode?.type === 'referral' ? appliedCode.code : '' });
     } catch (err) {
       showToast('Could not create payment order. You can upgrade later.', 'error');
-      localStorage.setItem('user', JSON.stringify({ ...userData, role:'admin' }));
+      localStorage.setItem('user', JSON.stringify({ ...userData, role: 'admin' }));
       router.push('/dashboard');
       return;
     }
@@ -85,15 +108,14 @@ export default function RegisterPage() {
       amount,
       currency,
       name: 'Coachstra',
-      description: 'Pro Plan — ₹999/month',
+      description: appliedCode?.type === 'referral' ? 'Pro Plan — ₹949/month (Referral Discount)' : 'Pro Plan — ₹999/month',
       order_id: orderId,
       prefill: { name: userData.name, email: userData.email },
       theme: { color: '#d97706' },
       modal: {
         ondismiss: () => {
-          // User closed payment — log them in as free, let them upgrade later
           showToast('Payment cancelled. You can upgrade anytime from the dashboard.', 'error');
-          localStorage.setItem('user', JSON.stringify({ ...userData, plan:'free', role:'admin' }));
+          localStorage.setItem('user', JSON.stringify({ ...userData, plan: 'free', role: 'admin' }));
           setLoading(false);
           setStep('form');
           router.push('/dashboard');
@@ -105,16 +127,16 @@ export default function RegisterPage() {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
+            referral_code: appliedCode?.type === 'referral' ? appliedCode.code : '',
           });
-          // Update stored user with pro plan
-          const proUser = { ...userData, plan:'paid', plan_expires_at: verify.expires_at, role:'admin' };
+          const proUser = { ...userData, plan: 'paid', plan_expires_at: verify.expires_at, role: 'admin' };
           localStorage.setItem('user', JSON.stringify(proUser));
           showToast('🎉 Pro plan activated! Welcome to Coachstra.');
           setStep('done');
           router.push('/dashboard');
         } catch (err) {
           showToast(err.message || 'Payment verification failed. Contact support.', 'error');
-          localStorage.setItem('user', JSON.stringify({ ...userData, plan:'free', role:'admin' }));
+          localStorage.setItem('user', JSON.stringify({ ...userData, plan: 'free', role: 'admin' }));
           setLoading(false);
           setStep('form');
           router.push('/dashboard');
@@ -125,7 +147,7 @@ export default function RegisterPage() {
     const rzp = new window.Razorpay(options);
     rzp.on('payment.failed', function(response) {
       showToast(`Payment failed: ${response.error.description}`, 'error');
-      localStorage.setItem('user', JSON.stringify({ ...userData, plan:'free', role:'admin' }));
+      localStorage.setItem('user', JSON.stringify({ ...userData, plan: 'free', role: 'admin' }));
       setLoading(false);
       setStep('form');
       router.push('/dashboard');
@@ -138,26 +160,55 @@ export default function RegisterPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // Validation
     if (form.password.length < 8) return showToast('Password must be at least 8 characters', 'error');
     if (!form.name.trim()) return showToast('Name is required', 'error');
     if (!form.coaching_name.trim()) return showToast('Coaching name is required', 'error');
 
     setLoading(true);
     try {
-      // Step 1: Register account (always as free initially)
+      // Step 1: Register account
       const res = await api.adminRegister({ ...form });
-      // Step 2: Store tokens so we can call authenticated endpoints
       api.setTokens(res.accessToken, res.refreshToken);
       const userData = { ...res.data };
 
       if (plan === 'paid') {
-        // Step 3: Open Razorpay — user logged in with free plan, payment upgrades them
+        let finalApplied = appliedPromo;
+
+        // Step 2: If a promo code was entered but not yet validated, validate it now (we're authenticated)
+        if (promoCode.trim() && !appliedPromo) {
+          try {
+            const codeRes = await api.validatePlanCode(promoCode.trim());
+            finalApplied = { ...codeRes.data, code: promoCode.trim().toUpperCase() };
+            setAppliedPromo(finalApplied);
+          } catch (err) {
+            showToast(`Promo code ignored: ${err.message}`, 'error');
+            finalApplied = null;
+          }
+        }
+
+        // Step 3a: If 100% coupon, claim directly — no payment needed
+        if (finalApplied?.type === 'coupon') {
+          showToast('Account created! Claiming your free month…');
+          try {
+            const claim = await api.claimCoupon(finalApplied.code);
+            const proUser = { ...userData, plan: 'paid', plan_expires_at: claim.expiresAt, role: 'admin' };
+            localStorage.setItem('user', JSON.stringify(proUser));
+            showToast('🎉 Pro plan activated for free! Welcome to Coachstra.');
+            router.push('/dashboard');
+          } catch (err) {
+            showToast(`Coupon claim failed: ${err.message}. Proceeding to payment.`, 'error');
+            await openRazorpay(userData, null);
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Step 3b: Open Razorpay with any referral discount
         showToast('Account created! Opening payment…');
-        await openRazorpay(userData, res);
+        await openRazorpay(userData, finalApplied);
       } else {
-        // Free plan — just log in
-        const userWithRole = { ...userData, plan:'free', role:'admin' };
+        // Free plan
+        const userWithRole = { ...userData, plan: 'free', role: 'admin' };
         localStorage.setItem('user', JSON.stringify(userWithRole));
         showToast('Coaching registered! Welcome 🎉');
         setLoading(false);
@@ -169,7 +220,10 @@ export default function RegisterPage() {
     }
   }
 
-  // Show a "processing payment" overlay
+  // Display price
+  const displayPrice = appliedPromo?.type === 'coupon' ? 0 : appliedPromo?.type === 'referral' ? 949 : 999;
+
+  // "Paying" overlay
   if (step === 'paying') {
     return (
       <div style={{ minHeight:'100vh', background:'#0a0f1e', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:20, fontFamily:"'Plus Jakarta Sans',sans-serif" }}>
@@ -231,11 +285,72 @@ export default function RegisterPage() {
             ))}
           </div>
 
-          {/* Pro plan notice */}
+          {/* Pro coupon / referral code section — shown only when Pro is selected */}
           {plan === 'paid' && (
-            <div style={{ marginTop:12, background:'rgba(217,119,6,0.08)', border:'1px solid rgba(217,119,6,0.25)', borderRadius:10, padding:'10px 14px', display:'flex', alignItems:'center', gap:8 }}>
-              <span style={{ fontSize:16 }}>💳</span>
-              <span style={{ fontSize:12, color:'#fbbf24' }}>Razorpay payment will open after registration. Your account activates instantly on successful payment.</span>
+            <div style={{ marginTop:14, background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:12, padding:'14px 16px' }}>
+              <p style={{ fontSize:12, fontWeight:700, color:'#94a3b8', marginBottom:10 }}>🎟️ Have a referral or coupon code?</p>
+
+              {appliedPromo ? (
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background: appliedPromo.type === 'coupon' ? 'rgba(124,58,237,0.12)' : 'rgba(22,163,74,0.1)', border:`1px solid ${appliedPromo.type === 'coupon' ? 'rgba(124,58,237,0.3)' : 'rgba(22,163,74,0.25)'}`, borderRadius:8, padding:'8px 12px' }}>
+                  <div>
+                    <span style={{ fontSize:10, background: appliedPromo.type === 'coupon' ? '#7c3aed' : '#16a34a', color:'#fff', padding:'2px 7px', borderRadius:4, fontWeight:800, textTransform:'uppercase', marginRight:8 }}>
+                      {appliedPromo.type} applied
+                    </span>
+                    <strong style={{ color:'#fff', fontFamily:'monospace', fontSize:13 }}>{appliedPromo.code}</strong>
+                    <div style={{ fontSize:11, color:'#94a3b8', marginTop:3 }}>{appliedPromo.message}</div>
+                  </div>
+                  <button onClick={handleRemovePromo} style={{ background:'transparent', border:'none', color:'#f87171', fontSize:11, fontWeight:700, cursor:'pointer', padding:'4px 8px', borderRadius:6 }}>
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display:'flex', gap:8 }}>
+                  <input
+                    type="text"
+                    placeholder="e.g. COUP-XXXX or referral code"
+                    value={promoCode}
+                    onChange={e => { setPromoCode(e.target.value); setPromoError(''); }}
+                    style={{ flex:1, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:8, padding:'9px 12px', fontSize:12, color:'#fff', outline:'none' }}
+                    onFocus={e => e.target.style.borderColor = '#fbbf24'}
+                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                  />
+                  <div style={{ fontSize:11, color:'#64748b', alignSelf:'center', whiteSpace:'nowrap' }}>
+                    (applied at checkout)
+                  </div>
+                </div>
+              )}
+
+              {promoError && (
+                <div style={{ color:'#f87171', fontSize:11, marginTop:6 }}>⚠️ {promoError}</div>
+              )}
+
+              {!appliedPromo && promoCode.trim() && (
+                <div style={{ marginTop:6, fontSize:11, color:'#64748b' }}>
+                  ✓ Code will be validated when you click Register
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Pro plan notice / pricing summary */}
+          {plan === 'paid' && (
+            <div style={{ marginTop:10, background:'rgba(217,119,6,0.08)', border:'1px solid rgba(217,119,6,0.25)', borderRadius:10, padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <span style={{ fontSize:16 }}>💳</span>
+                <span style={{ fontSize:12, color:'#fbbf24' }}>
+                  {appliedPromo?.type === 'coupon'
+                    ? '100% OFF Coupon — no payment needed!'
+                    : 'Razorpay payment opens after registration'}
+                </span>
+              </div>
+              {appliedPromo?.type === 'coupon' ? (
+                <span style={{ fontSize:16, fontWeight:800, color:'#fbbf24' }}>₹0</span>
+              ) : (
+                <span style={{ fontSize:14, fontWeight:800, color:'#fbbf24' }}>
+                  {displayPrice !== 999 && <span style={{ textDecoration:'line-through', opacity:0.5, marginRight:6 }}>₹999</span>}
+                  ₹{displayPrice}/mo
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -274,10 +389,7 @@ export default function RegisterPage() {
                 <input type={showPass?'text':'password'} value={form.password} onChange={set('password')} placeholder="Min 8 characters" required minLength={8}
                   style={{ ...S.input, paddingRight:44 }}
                   onFocus={e=>e.target.style.borderColor='rgba(96,165,250,0.5)'} onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'} />
-                {/* <button type="button" onClick={()=>setShowPass(s=>!s)} style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#64748b', fontSize:16 }}>
-                  {showPass?'🙈':'👁️'}
-                </button> */}
-                <button type="button" onClick={() => setShowPass(s => !s)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center' }}>
+                <button type="button" onClick={() => setShowPass(s => !s)} style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#64748b', display:'flex', alignItems:'center' }}>
                   {showPass ? (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                   ) : (
@@ -290,14 +402,24 @@ export default function RegisterPage() {
             {/* Selected plan summary */}
             <div style={{ background:plan==='paid'?'rgba(217,119,6,0.1)':'rgba(37,99,235,0.08)', border:`1px solid ${plan==='paid'?'rgba(217,119,6,0.3)':'rgba(37,99,235,0.2)'}`, borderRadius:10, padding:'10px 14px', marginBottom:18, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
               <span style={{ fontSize:13, color:'#94a3b8' }}>Selected plan:</span>
-              <span style={{ fontSize:13, fontWeight:700, color:plan==='paid'?'#fbbf24':'#60a5fa' }}>
-                {plan==='paid'?'⭐ Pro — ₹999/mo':'🎁 Free — ₹0'}
-              </span>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <span style={{ fontSize:13, fontWeight:700, color:plan==='paid'?'#fbbf24':'#60a5fa' }}>
+                  {plan==='paid'?'⭐ Pro':'🎁 Free — ₹0'}
+                </span>
+                {plan === 'paid' && (
+                  <span style={{ fontSize:13, fontWeight:800, color:'#fbbf24' }}>
+                    {displayPrice !== 999 && <span style={{ textDecoration:'line-through', opacity:0.5, marginRight:4 }}>₹999</span>}
+                    ₹{displayPrice}/mo
+                  </span>
+                )}
+              </div>
             </div>
 
             <button type="submit" disabled={loading}
               style={{ ...S.btnPrimary, width:'100%', padding:'13px', fontSize:15, justifyContent:'center', background:plan==='paid'?'linear-gradient(135deg,#d97706,#b45309)': 'linear-gradient(178deg, #0050ff, #0c2354)', boxShadow:plan==='paid'?'0 8px 24px rgba(217,119,6,0.25)': '0 8px 24px rgba(0, 80, 255, 0.25)' }}>
-              {loading ? <Spinner size={18} color="#fff"/> : plan==='paid'?'Register & Pay ₹999 →':'Register Free →'}
+              {loading ? <Spinner size={18} color="#fff"/> : plan==='paid'
+                ? (appliedPromo?.type === 'coupon' ? 'Register & Claim Free Month →' : `Register & Pay ₹${displayPrice} →`)
+                : 'Register Free →'}
             </button>
           </form>
 

@@ -34,7 +34,63 @@ function StatBox({ label, value, color, href, icon, router }) {
   );
 }
 
-function AdminDashboard({ data }) {
+function BillingBanner({ user }) {
+  if (!user || user.role !== 'admin') return null;
+
+  const isPaid = user.plan === 'paid';
+  const expiresAt = user.plan_expires_at ? new Date(user.plan_expires_at) : null;
+  const isExpired = expiresAt && expiresAt < new Date();
+  const daysLeft = expiresAt ? Math.ceil((expiresAt - new Date()) / (1000 * 60 * 60 * 24)) : 0;
+  const isExpiringSoon = isPaid && !isExpired && daysLeft <= 7;
+
+  if (!isPaid && !isExpired) return null; // free plan already shown via upgrade button in topbar
+
+  const color = isExpired ? '#dc2626' : isExpiringSoon ? '#d97706' : '#16a34a';
+  const bg    = isExpired ? 'rgba(220,38,38,0.08)' : isExpiringSoon ? 'rgba(217,119,6,0.08)' : 'rgba(22,163,74,0.07)';
+  const border = isExpired ? 'rgba(220,38,38,0.25)' : isExpiringSoon ? 'rgba(217,119,6,0.25)' : 'rgba(22,163,74,0.2)';
+
+  return (
+    <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: 14, padding: '14px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ width: 36, height: 36, background: `${color}20`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          {isExpired ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          )}
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>
+            {isExpired ? '⚠️ Subscription Expired'
+              : isExpiringSoon ? `⏰ Expiring in ${daysLeft} day${daysLeft === 1 ? '' : 's'}!`
+              : '✅ Pro Plan Active'}
+          </div>
+          <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
+            {isExpired
+              ? `Expired on ${expiresAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Renew to restore access.`
+              : `Next billing date: ${expiresAt.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · Manual renewal required`}
+          </div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Billing Cycle</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#cbd5e1' }}>Monthly · ₹999/mo</div>
+        </div>
+        <div style={{ fontSize: 11, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '4px 10px', borderRadius: 6, whiteSpace: 'nowrap' }}>
+          No auto-debit · Manual renewal
+        </div>
+        {(isExpired || isExpiringSoon) && (
+          <Link href="/dashboard/upgrade" style={{ background: `linear-gradient(135deg,${color},${color}cc)`, color: '#fff', fontSize: 12, fontWeight: 700, padding: '7px 14px', borderRadius: 8, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            {isExpired ? 'Renew Now' : 'Renew Early'}
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AdminDashboard({ data, user }) {
   const router = useRouter();
   const { stats, recentStudents, upcomingClasses } = data;
   const feeSegs = [
@@ -47,6 +103,7 @@ function AdminDashboard({ data }) {
   ];
   return (
     <div>
+      <BillingBanner user={user} />
       <div style={{ marginBottom:28 }}>
         <h1 style={{ fontFamily:"'Space Grotesk',sans-serif",fontSize:26,fontWeight:800,color:'#f1f5f9',marginBottom:4 }}>Overview</h1>
         <p style={{ color:'#64748b',fontSize:14 }}>Welcome back! Here's your coaching at a glance.</p>
@@ -271,7 +328,7 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       {loading ? <div style={{ display:'flex',justifyContent:'center',alignItems:'center',height:300 }}><Spinner size={40}/></div>
-        : data ? (user?.role==='admin'?<AdminDashboard data={data}/>:user?.role==='teacher'?<TeacherDashboard data={data}/>:<StudentDashboard data={data}/>) : null}
+        : data ? (user?.role==='admin'?<AdminDashboard data={data} user={user}/>:user?.role==='teacher'?<TeacherDashboard data={data}/>:<StudentDashboard data={data}/>) : null}
     </DashboardLayout>
   );
 }

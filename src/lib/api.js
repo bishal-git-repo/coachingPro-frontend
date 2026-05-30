@@ -192,8 +192,10 @@ class ApiClient {
   deleteMaterial(id) { return this.delete(`/materials/${id}`); }
 
   // ── Plan ──────────────────────────────────────────────────
-  createPlanOrder() { return this.post('/plan/order', {}); }
+  createPlanOrder(data) { return this.post('/plan/order', data || {}); }
   verifyPlanPayment(data) { return this.post('/plan/verify', data); }
+  validatePlanCode(code) { return this.post('/plan/validate-code', { code }); }
+  claimCoupon(couponCode) { return this.post('/admin/referral/claim-coupon', { couponCode }); }
 }
 
 const api = new ApiClient();
